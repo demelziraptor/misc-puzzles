@@ -1,4 +1,8 @@
-dict = {}
+import pdb
+import operator
+import binascii
+
+store = {}
 ciphertexts = [
     '315c4eeaa8b5f8aaf9174145bf43e1784b8fa00dc71d885a804e5ee9fa40b16349c146fb778cdf2d3aff021dfff5b403b510d0d0455468aeb98622b137dae857553ccd8883a7bc37520e06e515d22c954eba5025b8cc57ee59418ce7dc6bc41556bdb36bbca3e8774301fbcaa3b83b220809560987815f65286764703de0f3d524400a19b159610b11ef3e',
     '234c02ecbbfbafa3ed18510abd11fa724fcda2018a1a8342cf064bbde548b12b07df44ba7191d9606ef4081ffde5ad46a5069d9f7f543bedb9c861bf29c7e205132eda9382b0bc2c5c4b45f919cf3a9f1cb74151f6d551f4480c82b2cb24cc5b028aa76eb7b4ab24171ab3cdadb8356f',
@@ -14,46 +18,80 @@ ciphertexts = [
 
 targetct = '32510ba9babebbbefd001547a810e67149caee11d945cd7fc81a05e9f85aac650e9052ba6a8cd8257bf14d13e6f0a803b54fde9e77472dbff89d71b57bddef121336cb85ccb8f3315f4b52e301d16e9f52f904'
 
+def populate_store(ciphertexts):
+    for i, currentciphertext in enumerate(ciphertexts):
+        for j, ciphertext in enumerate(ciphertexts[i+1:]):
+            # 1 is current/source ciphertext, 2 is target ciphertext        
+            ctnum1 = i
+            ctnum2 = j + i + 1
+            ctlist1 = [ciphertexts[ctnum1][x:x+2] for x in range(0, len(ciphertexts[ctnum1]), 2)]
+            ctlist2 = [ciphertexts[ctnum2][x:x+2] for x in range(0, len(ciphertexts[ctnum2]), 2)]
 
-for i, currentciphertext in enumerate(ciphertexts:):
-    for j, ciphertext in enumerate(ciphertexts[i+1:]):
-        # 1 is current/source ciphertext, 2 is target ciphertext        
-        ctnum1 = i
-        ctnum2 = j + i + 1
-        ctlist1 = [ciphertexts[1][x:x+2] for x in range(0, len(ciphertexts[1]), 2)]
-        ctlist2 = [ciphertexts[2][x:x+2] for x in range(0, len(ciphertexts[2]), 2)]
-
-        for hexindex, (cthex1,cthex2) in enumerate(zip(ctlist1, ctlist2)):
-            hexmsg = xor(cthex1, cthex2)
-            evaluate(hexmsg, hexindex, ctnum1, ctnum2)
+            for hexindex, (cthex1,cthex2) in enumerate(zip(ctlist1, ctlist2)):
+                hexmsg = xorct(cthex1, cthex2)
+                evaluate(hexmsg, hexindex, ctnum1, ctnum2)
         
        
+def hextoint(ct):
+    """ convert hex to int so can be xored """
+    return int(ct, 16)
 
-
-def xor(hex1, hex2):
-    pass
+def xorct(cthex1, cthex2):
+    """ xor operation, return ascii char """
+    hx = hex(hextoint(cthex1) ^ hextoint(cthex2))[2:]
+    # fix badly returned hex chars eg 6 > 06
+    if len(hx) < 2: hx = '0' + hx
+    return binascii.unhexlify(hx)
 
 def evaluate(hexmsg, hexindex, ctnum1, ctnum2):
+    """ store data if xor results in an alpha char """
+
     if hexmsg.isalpha():
         hexmsg = invert_case(hexmsg)
-        cthex1 = cipertexts[ctnum1][hexindex*2:hexindex*2+2]
-        cthex2 = cipertexts[ctnum2][hexindex*2:hexindex*2+2]
+        cthex1 = ciphertexts[ctnum1][hexindex*2:hexindex*2+2]
+        cthex2 = ciphertexts[ctnum2][hexindex*2:hexindex*2+2]
 
-        # ciperhex in dictionary
-        if dict[cthex1]:
-            # ciperhex already matched with this hex, increment count
-            if dict[cthex1][hexmsg]:
-                dict[cthex1][hexmsg] += 1
-            # cipherhex not matched with this hex before, create and start count at 1
+        result = hexmsg
+        # ciperhex in dictionary - 1
+        if cthex1 in store:
+            # ciperhex already matched with this hex, increment count - 2
+            if result in store[cthex1]:               
+                store[cthex1][result] += 1
+            # cipherhex not matched with this hex before, create and start count at 1 - 3
             else:
-                dict[cthex1][hexmsg] = 1
-        # cipherhex not in dictionary, create
+                store[cthex1][result] = 1
+        # cipherhex not in dictionary, create - 4
         else:
-            dict[cthex1] = [{hexmsg = 1}]
+            store[cthex1] = {result: 1}
+
+#        for result in (hexmsg, ' '):
+            # ciperhex in dictionary - 1
+#            if cthex1 in store:
+                # ciperhex already matched with this hex, increment count - 2
+#                if result in store[cthex1]:               
+#                    store[cthex1][result] += 1
+                # cipherhex not matched with this hex before, create and start count at 1 - 3
+#                else:
+#                    store[cthex1][result] = 1
+            # cipherhex not in dictionary, create - 4
+#            else:
+#                store[cthex1] = {result: 1}
              
 
 def invert_case(char):
+    """ invert case of character """
     if char.isupper():
         return char.lower()
     else:
          return char.upper()
+
+
+def decrypt(store, targetct):
+    decryption = ''
+    ctlist = [targetct[x:x+2] for x in range(0, len(targetct), 2)]
+    for cthex in ctlist:
+        if cthex not in store:
+            decryption += '_'
+        else:
+            decryption += max(store[cthex].iteritems(), key=operator.itemgetter(1))[0]
+    return decryption
