@@ -3,6 +3,7 @@ import operator
 import binascii
 
 store = {}
+finalstore = {}
 ciphertexts = [
     '315c4eeaa8b5f8aaf9174145bf43e1784b8fa00dc71d885a804e5ee9fa40b16349c146fb778cdf2d3aff021dfff5b403b510d0d0455468aeb98622b137dae857553ccd8883a7bc37520e06e515d22c954eba5025b8cc57ee59418ce7dc6bc41556bdb36bbca3e8774301fbcaa3b83b220809560987815f65286764703de0f3d524400a19b159610b11ef3e',
     '234c02ecbbfbafa3ed18510abd11fa724fcda2018a1a8342cf064bbde548b12b07df44ba7191d9606ef4081ffde5ad46a5069d9f7f543bedb9c861bf29c7e205132eda9382b0bc2c5c4b45f919cf3a9f1cb74151f6d551f4480c82b2cb24cc5b028aa76eb7b4ab24171ab3cdadb8356f',
@@ -17,6 +18,8 @@ ciphertexts = [
 ]
 
 targetct = '32510ba9babebbbefd001547a810e67149caee11d945cd7fc81a05e9f85aac650e9052ba6a8cd8257bf14d13e6f0a803b54fde9e77472dbff89d71b57bddef121336cb85ccb8f3315f4b52e301d16e9f52f904'
+
+populate_store(ciphertexts)
 
 def populate_store(ciphertexts):
     for i, currentciphertext in enumerate(ciphertexts):
@@ -48,8 +51,8 @@ def evaluate(hexmsg, hexindex, ctnum1, ctnum2):
 
     if hexmsg.isalpha():
         hexmsg = invert_case(hexmsg)
-        cthex1 = ciphertexts[ctnum1][hexindex*2:hexindex*2+2]
-        cthex2 = ciphertexts[ctnum2][hexindex*2:hexindex*2+2]
+        cthex1 = getctfrompt(ctnum1, hexindex)
+        cthex2 = getctfrompt(ctnum2, hexindex)
 
         result = hexmsg
         # ciperhex in dictionary - 1
@@ -85,6 +88,11 @@ def invert_case(char):
     else:
          return char.upper()
 
+def getctfrompt(ciphertext_num, index):
+    return ciphertexts[ciphertext_num][index*2:index*2+2]
+
+def decrypt_hex(cthex):
+    return max(store[cthex].iteritems(), key=operator.itemgetter(1))[0]
 
 def decrypt(store, targetct):
     decryption = ''
@@ -93,5 +101,27 @@ def decrypt(store, targetct):
         if cthex not in store:
             decryption += '_'
         else:
-            decryption += max(store[cthex].iteritems(), key=operator.itemgetter(1))[0]
+            decryption += decrypt_hex(cthex)
     return decryption
+
+def setfinal(ciphertext_num, index, char):
+    cthex = cthexlist.append(getctfrompt(ciphertext_num, index))
+    finalstore[cthex] = char 
+
+def finaldecrypt(targetct):
+    decryption = ''
+    ctlist = [targetct[x:x+2] for x in range(0, len(targetct), 2)]
+    for cthex in ctlist:
+        if cthex in finalstore:
+            decryption += finalstore[cthex]
+        else:
+            decryption += decrypt_hex(cthex)
+    return decryption
+
+def decrypt_all(final=0):
+    for i, ciphertext in enumerate(ciphertexts):
+        print str(i) + ' : ' + decrypt(store, ciphertext)
+    print 'target : ' + decrypt(store, targetct)
+
+def see_possible_pt(ciphertext_num, index):
+    return store[getctfrompt(ciphertext_num, index)]
