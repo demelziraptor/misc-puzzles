@@ -1,0 +1,22 @@
+Dyrrhachium south=Apollonia
+Apollonia north=Dyrrahachium east=Pella
+Pella east=Thessalonica south=Berora west=Apollonia
+Thessalonica north=Amphipolis west=Pella
+Amphipolis south=Thessalonica
+Berora north=Pella south=Larissa
+Larissa north=Berora east=Demetrias south=Delphi west=Ambracia
+Ambracia east=Larissa south=Thermon
+Demetrias south=Chalcis west=Larissa
+Thermon north=Ambracia east=Delphi south=Patra
+Delphi north=Larissa east=Chalcis west=Thermon
+Chalcis north=Demetrias south=Thebae west=Delphi
+Patra north=Thermon south=Elis
+Thebae north=Chalcis south=Megara
+Elis north=Patra east=Corinthus south=Olympia
+Corinthus east=Megara south=Argos west=Elis
+Megara north=Thebae east=Athenae west=Corinthus
+Athenea west=Megara
+Olympia north=Elis east=Argos south=Messene
+Argos north=Corinthus south=Sparta west=Olympia
+Messene north=Olympia east=Sparta
+Sparta north=Argos west=Messene
