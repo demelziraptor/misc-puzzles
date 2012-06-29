@@ -31,7 +31,7 @@ class Main:
     def setup_monsters_and_cities(self):
         """ read map file, add map and monster dictionaries """
         for line in args.map_file:
-            pass
+            self._parse_map(line)
         for num in range(args.num_monsters):
             self.monsters[num] = random.choice(list(self.cities.keys()))
 
@@ -47,6 +47,7 @@ class Main:
             pass
             
     def _move(self):
+        """ moves the monsters! """
         for monster, location in self.monsters.iteritems():
             options = self.cities[location]
             direction = random.choice(list(options.keys()))
@@ -56,6 +57,19 @@ class Main:
             
     def _destroy(self):
         pass
+        
+    def _parse_map(self, line):
+        """ put map lines into cities dictionary """
+        line_list = line.split()
+        location = line_list.pop[0]
+        location_dict = {}
+        for road in line_list:
+            position = road.find('=')
+            direction = road[:position]
+            city = road[position+1:]
+            location_dict[direction] = city
+        self.cities[location] = location_dict
+            
             
 
 if __name__ == "__main__":
