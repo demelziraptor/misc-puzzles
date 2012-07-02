@@ -16,10 +16,10 @@ class Main:
     cities = {}
     
     def __init__(self):
-        self.parse_args
-        self.setup_monsters_and_cities
+        self._parse_args()
+        self._setup_monsters_and_cities()
     
-    def parse_args(self):
+    def _parse_args(self):
         """ get cli arguments and add to arg variable """
         parser = argparse.ArgumentParser(description='Monsters, destroying stuff!')
         parser.add_argument('map_file', metavar='M', type=file, help='the map file')
@@ -28,7 +28,7 @@ class Main:
         self.args = parser.parse_args()
         print self.args
         
-    def setup_monsters_and_cities(self):
+    def _setup_monsters_and_cities(self):
         """ read map file, add map and monster dictionaries """
         for line in args.map_file:
             self._parse_map(line)
@@ -37,8 +37,8 @@ class Main:
 
     def run_iterations(self):
         """ do an iteration until all monsters die or each monster moves 10,000 times """
-        self._move
-        self._destroy
+        self._move()
+        self._destroy()
         
     def print_map(self):
         """ print out remaining map in correct format """
@@ -74,5 +74,5 @@ class Main:
 
 if __name__ == "__main__":
     main = Main
-    main.run_iterations
-    main.print_map
+    main.run_iteration()
+    main.print_map()
