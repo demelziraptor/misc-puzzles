@@ -41,7 +41,6 @@ while counter:
     num_list = [nums[i] for i in counter]
     if calculation(num_list) == target:
         options.append(num_list)
-        print num_list
     counter = reduce_counter(counter)
 
 # the end
