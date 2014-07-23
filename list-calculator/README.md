@@ -1,0 +1,1 @@
+Puzzle where I had a calculation involving a list of numbers, a result from the calculation, a range of numbers to use with the calculation, and the size of the list, but I didn't know exactly what number should be in what position in the list.
